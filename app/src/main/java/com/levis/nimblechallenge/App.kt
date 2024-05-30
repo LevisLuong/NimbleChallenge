@@ -5,10 +5,4 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class App : Application() {
-
-    @SuppressLint("AppOpenMissing")
-    override fun onCreate() {
-        super.onCreate()
-    }
-}
+class App : Application()

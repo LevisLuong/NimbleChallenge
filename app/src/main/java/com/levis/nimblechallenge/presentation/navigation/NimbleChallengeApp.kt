@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.levis.nimblechallenge.presentation.ui.login.LoginScreen
+import com.levis.nimblechallenge.presentation.ui.splash.SplashScreen
 
 @Composable
 fun NimbleChallengeApp() {
@@ -22,7 +23,10 @@ fun NimbleChallengeNavHost(
     navController: NavHostController
 ) {
     val activity = (LocalContext.current as Activity)
-    NavHost(navController = navController, startDestination = ScreenNavigation.Login.route) {
+    NavHost(navController = navController, startDestination = ScreenNavigation.Splash.route) {
+        composable(route = ScreenNavigation.Splash.route) {
+            SplashScreen(navController = navController)
+        }
         composable(route = ScreenNavigation.Login.route) {
             LoginScreen()
         }

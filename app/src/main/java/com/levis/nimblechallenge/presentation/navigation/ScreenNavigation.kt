@@ -8,6 +8,7 @@ sealed class ScreenNavigation(
     val route: String,
     val navArguments: List<NamedNavArgument> = emptyList()
 ) {
+    data object Splash : ScreenNavigation("splash")
     data object Login : ScreenNavigation("login")
 
     data object Home : ScreenNavigation("home")

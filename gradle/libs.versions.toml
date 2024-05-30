@@ -1,6 +1,6 @@
 [versions]
 agp = "8.4.1"
-hiltAndroid = "2.44"
+hiltAndroid = "2.49"
 hiltExtenstions = "1.2.0"
 kotlin = "1.9.22"
 coreKtx = "1.13.1"
@@ -20,6 +20,7 @@ spotlessPluginGradle = "6.19.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -36,9 +37,10 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 
 # Dagger Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
-hilt-dagger-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltAndroid" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltExtenstions" }
-hilt-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltExtenstions" }
+hilt-dagger-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltAndroid" }
+hilt-hilt-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "hiltAndroid" }
+#hilt-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltExtenstions" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hiltAndroid" }
 
 # Retrofit

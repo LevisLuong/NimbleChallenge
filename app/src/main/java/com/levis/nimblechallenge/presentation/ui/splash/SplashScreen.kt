@@ -1,19 +1,15 @@
 package com.levis.nimblechallenge.presentation.ui.splash
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.levis.nimblechallenge.R
@@ -26,12 +22,15 @@ import kotlinx.coroutines.launch
 fun SplashScreen(
     navController: NavHostController = rememberNavController(),
 ) {
-
     val rememberCoroutineScope = rememberCoroutineScope()
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = true) {
         rememberCoroutineScope.launch {
             delay(2000)
-            navController.navigate(ScreenNavigation.Login.route)
+            navController.navigate(ScreenNavigation.Login.route) {
+                popUpTo(ScreenNavigation.Splash.route) {
+                    inclusive = true
+                }
+            }
         }
     }
     SplashContent()

@@ -318,7 +318,7 @@ fun BottomViewPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HomeBackgroundImagePreview() {
+fun SurveyImagePreview() {
     NimbleChallengeTheme {
         SurveyImage("https://picsum.photos/200/300")
     }

@@ -16,9 +16,7 @@
         android:theme="@style/Theme.NimbleChallenge">
         <activity
             android:name=".presentation.ui.NimbleChallengeActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.NimbleChallenge">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

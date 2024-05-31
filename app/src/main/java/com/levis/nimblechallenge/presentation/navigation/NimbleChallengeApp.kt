@@ -31,7 +31,11 @@ fun NimbleChallengeNavHost(
         composable(route = ScreenNavigation.Login.route) {
             LoginScreen(
                 onGoToHome = {
-                    navController.navigate(ScreenNavigation.Home.route)
+                    navController.navigate(ScreenNavigation.Home.route) {
+                        popUpTo(ScreenNavigation.Login.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

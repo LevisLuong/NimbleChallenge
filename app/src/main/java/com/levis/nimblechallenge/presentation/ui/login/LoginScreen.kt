@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -51,6 +52,11 @@ import com.levis.nimblechallenge.presentation.theme.White30
 import com.levis.nimblechallenge.presentation.theme.White50
 import com.levis.nimblechallenge.presentation.ui.components.FilledButton
 import com.levis.nimblechallenge.presentation.ui.components.MyTextField
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+
+const val TIME_DELAY_DISPLAY_LOGO = 1000
+const val ANIMATION_TIME_DURATION = 600
 
 @Composable
 fun LoginScreen(
@@ -62,16 +68,17 @@ fun LoginScreen(
     }
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(
-            bgWindow,
-            animationSpec = tween(500),
-            label = "Ani change background image"
+            bgWindow, animationSpec = tween(
+                ANIMATION_TIME_DURATION,
+                delayMillis = TIME_DELAY_DISPLAY_LOGO,
+                easing = LinearEasing
+            ), label = "Ani change background image"
         ) { targetState ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .paint(
-                        painterResource(targetState),
-                        contentScale = ContentScale.FillBounds
+                        painterResource(targetState), contentScale = ContentScale.FillBounds
                     ),
             )
         }
@@ -80,8 +87,7 @@ fun LoginScreen(
             Modifier
                 .align(Alignment.Center)
                 .fillMaxWidth()
-                .padding(24.dp),
-            onGoToHome
+                .padding(24.dp), onGoToHome
         )
     }
 }
@@ -91,46 +97,55 @@ fun ImageLogoComponent(modifier: Modifier = Modifier) {
     // Make animation of this image from center height to top
     val startPosition = Offset(0f, 0f)
     val endPosition = Offset(0f, -200f)
-    val position = remember { Animatable(startPosition, Offset.VectorConverter) }
+    val animatedPosition by remember {
+        mutableStateOf(
+            Animatable(
+                startPosition, Offset.VectorConverter
+            )
+        )
+    }
     val animatedSizeOffset by remember { mutableStateOf(Animatable(0f)) }
-
-    LaunchedEffect(key1 = Unit) {
-        Log.d("trunglx", "start animation position")
-        position.animateTo(
-            targetValue = endPosition,
-            animationSpec = keyframes {
-                durationMillis = 500
-            }
-        )
+    var visible by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(key1 = visible) {
+        Log.d("trunglx--current thread", "Current thread " + Thread.currentThread().toString())
+        visible = true
     }
     LaunchedEffect(key1 = Unit) {
-        Log.d("trunglx", "start animation position")
-        animatedSizeOffset.animateTo(
-            targetValue = -35f,
-            animationSpec = keyframes {
-                durationMillis = 500
-            }
-        )
+        awaitAll(async {
+            animatedPosition.animateTo(targetValue = endPosition, animationSpec = keyframes {
+                durationMillis = ANIMATION_TIME_DURATION
+                delayMillis = TIME_DELAY_DISPLAY_LOGO
+            })
+        }, async {
+            animatedSizeOffset.animateTo(targetValue = -35f, animationSpec = keyframes {
+                durationMillis = ANIMATION_TIME_DURATION
+                delayMillis = TIME_DELAY_DISPLAY_LOGO
+            })
+        })
     }
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    AnimatedVisibility(
+        visible, modifier = modifier, enter = fadeIn(animationSpec = tween(ANIMATION_TIME_DURATION))
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_nimble_logo),
-            modifier = Modifier
-                .width(animatedSizeOffset.value.dp + 200.dp)
-                .offset(y = position.value.y.dp),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth
-        )
+        Box(
+            modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nimble_logo),
+                modifier = Modifier
+                    .width(animatedSizeOffset.value.dp + 200.dp)
+                    .offset(y = animatedPosition.value.y.dp),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth
+            )
+        }
     }
 }
 
 @Composable
 fun LoginContent(
-    modifier: Modifier = Modifier,
-    onGoToHome: () -> Unit
+    modifier: Modifier = Modifier, onGoToHome: () -> Unit
 ) {
     var visible by remember {
         mutableStateOf(false)
@@ -147,9 +162,15 @@ fun LoginContent(
     AnimatedVisibility(
         visible,
         modifier = modifier,
-        enter = fadeIn(animationSpec = tween(500))
+        enter = fadeIn(
+            animationSpec = tween(
+                ANIMATION_TIME_DURATION,
+                easing = LinearEasing,
+                delayMillis = TIME_DELAY_DISPLAY_LOGO
+            )
+        )
     ) {
-        Column() {
+        Column {
             InputEmailComponent(email, onTextChanged = { email = it })
             Spacer(modifier = Modifier.height(20.dp))
             InputPasswordComponent(password, onTextChanged = { password = it })
@@ -159,8 +180,7 @@ fun LoginContent(
                     focusManager.clearFocus()
                     onGoToHome.invoke()
 //                onClickedLogIn.invoke(email, password)
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .fillMaxWidth()
                     .testTag("btnLogin")
             ) {
@@ -172,9 +192,7 @@ fun LoginContent(
 
 @Composable
 fun InputEmailComponent(
-    email: String,
-    onTextChanged: (String) -> Unit,
-    errorStatus: Boolean = false
+    email: String, onTextChanged: (String) -> Unit, errorStatus: Boolean = false
 ) {
     MyTextField(
         value = email,
@@ -191,32 +209,26 @@ fun InputEmailComponent(
             .fillMaxWidth()
             .testTag("emailInput"),
         keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Email,
-            autoCorrect = false
+            imeAction = ImeAction.Next, keyboardType = KeyboardType.Email, autoCorrect = false
         )
     )
 }
 
 @Composable
 fun InputPasswordComponent(
-    password: String,
-    onTextChanged: (String) -> Unit,
-    errorStatus: Boolean = false
+    password: String, onTextChanged: (String) -> Unit, errorStatus: Boolean = false
 ) {
 
     val localFocusManager = LocalFocusManager.current
 
     Box(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(R.string.forgot),
+        Text(text = stringResource(R.string.forgot),
             style = MaterialTheme.typography.bodyMedium,
             color = White50,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(16.dp)
-                .clickable {}
-        )
+                .clickable {})
         MyTextField(
             value = password,
             onValueChange = onTextChanged,
@@ -235,9 +247,7 @@ fun InputPasswordComponent(
                 .fillMaxWidth()
                 .testTag("passwordInput"),
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Text,
-                autoCorrect = false
+                imeAction = ImeAction.Done, keyboardType = KeyboardType.Text, autoCorrect = false
             ),
             keyboardActions = KeyboardActions(onDone = { localFocusManager.clearFocus() })
         )

@@ -87,4 +87,7 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.jsonapi)
     implementation(libs.moshi.jsonapi.retrofit.converter)
+
+    // Coil
+    implementation(libs.coil.compose)
 }

@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.levis.nimblechallenge.presentation.ui.home.SurveyListContent
 import com.levis.nimblechallenge.presentation.ui.login.LoginScreen
 import com.levis.nimblechallenge.presentation.ui.splash.SplashScreen
 
@@ -28,7 +29,14 @@ fun NimbleChallengeNavHost(
             SplashScreen(navController = navController)
         }
         composable(route = ScreenNavigation.Login.route) {
-            LoginScreen()
+            LoginScreen(
+                onGoToHome = {
+                    navController.navigate(ScreenNavigation.Home.route)
+                }
+            )
+        }
+        composable(route = ScreenNavigation.Home.route) {
+            SurveyListContent()
         }
     }
 }

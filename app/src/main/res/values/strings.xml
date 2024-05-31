@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">NimbleChallenge</string>
-    <string name="login">Login</string>
+    <string name="login">Log in</string>
     <string name="password">Password</string>
-    <string name="hide_password">Hide Password</string>
-    <string name="show_password">Show Password</string>
+    <string name="email">Email</string>
+    <string name="forgot">Forgot?</string>
+    <string name="logout">Logout</string>
 </resources>

@@ -9,6 +9,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,15 +40,13 @@ fun SplashScreen(
 @Composable
 private fun SplashContent() {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            modifier = Modifier.size(202.dp, 48.dp),
-            painter = painterResource(id = R.drawable.ic_nimble_logo),
-            contentDescription = null,
-        )
-    }
+        modifier = Modifier
+            .fillMaxSize()
+            .paint(
+                painter = painterResource(id = R.drawable.bg_window),
+                contentScale = ContentScale.FillBounds
+            ),
+    )
 }
 
 @Preview

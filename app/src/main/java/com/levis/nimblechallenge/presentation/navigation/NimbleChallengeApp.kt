@@ -36,6 +36,9 @@ fun NimbleChallengeNavHost(
                             inclusive = true
                         }
                     }
+                },
+                onGoToForgotPassword = {
+
                 }
             )
         }

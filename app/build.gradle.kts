@@ -1,9 +1,16 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
 }
+
+val localPropertiesFile = rootProject.file("local.properties")
+val localProperties = Properties()
+localProperties.load(FileInputStream(localPropertiesFile))
 
 android {
     namespace = "com.levis.nimblechallenge"
@@ -21,7 +28,23 @@ android {
             useSupportLibrary = true
         }
     }
+    flavorDimensions.add("environment")
+    productFlavors {
+        create("dev") {
+            dimension = flavorDimensions[0]
+            applicationIdSuffix = ".dev"
 
+            buildConfigField("String", "CLIENT_ID", localProperties.getProperty("CLIENT_ID_DEV"))
+            buildConfigField("String", "CLIENT_SECRET", localProperties.getProperty("CLIENT_SECRET_DEV"))
+            buildConfigField("String", "APIUrl", "\"https://nimble-survey-web-staging.herokuapp.com/\"")
+        }
+        create("prod") {
+            dimension = flavorDimensions[0]
+            buildConfigField("String", "CLIENT_ID", localProperties.getProperty("CLIENT_ID"))
+            buildConfigField("String", "CLIENT_SECRET", localProperties.getProperty("CLIENT_SECRET"))
+            buildConfigField("String", "APIUrl", "\"https://survey-api.nimblehq.co/\"")
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -40,6 +63,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
@@ -70,6 +94,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // KotlinX
+    implementation(libs.kotlinx.serialization.json)
+
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
@@ -85,8 +112,11 @@ dependencies {
 
     // Moshi Json API
     implementation(libs.moshi)
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation(libs.moshi.jsonapi)
     implementation(libs.moshi.jsonapi.retrofit.converter)
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
 
     // Coil
     implementation(libs.coil.compose)

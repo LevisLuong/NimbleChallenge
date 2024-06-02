@@ -23,7 +23,7 @@ class LoginViewModel @Inject constructor(
 
     fun login(email: String, password: String) {
         loginUseCase
-            .login(LoginRequest("email", "password"))
+            .login(LoginRequest(email, password))
             .bindLoading(this)
             .bindError(this)
             .onSuccess {

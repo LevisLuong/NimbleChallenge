@@ -1,10 +1,9 @@
 package com.levis.nimblechallenge.domain.mappers
 
 
+import com.google.gson.Gson
 import com.levis.nimblechallenge.data.network.dtos.ErrorResponse
 import com.levis.nimblechallenge.domain.model.error.DataException
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
 import retrofit2.Response
@@ -30,7 +29,7 @@ fun Throwable.mapError(): DataException {
 
         is DataException.Api -> this
 
-        else -> DataException.Unknown
+        else -> DataException.Unknown(this.message)
     }
 }
 
@@ -54,11 +53,7 @@ fun <T> Response<T>.toException(): DataException {
 fun parseErrorResponse(response: Response<*>?): ErrorResponse? {
     val jsonString = response?.errorBody()?.string()
     return try {
-        val moshi = Moshi
-            .Builder()
-            .addLast(KotlinJsonAdapterFactory())
-            .build()
-        jsonString?.let { moshi.adapter(ErrorResponse::class.java).fromJson(it) }
+        jsonString?.let { Gson().fromJson(it, ErrorResponse::class.java) }
     } catch (exception: IOException) {
         null
     } catch (exception: SerializationException) {

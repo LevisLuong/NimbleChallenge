@@ -10,7 +10,8 @@ sealed class DataException : RuntimeException {
     data object NotFound : DataException("Not Found")
     data object MethodNotAllowed : DataException("Method Not Allowed")
     data object ServerException : DataException("Server Error")
-    data object Unknown : DataException("Unknown Error")
+
+    data class Unknown(val debugMessage: String?) : DataException("Unknown Error")
 
     data class Api(
         val error: ErrorResponse?,

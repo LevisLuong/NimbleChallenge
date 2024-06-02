@@ -9,13 +9,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.ExperimentalSerializationApi
-import moe.banana.jsonapi2.JsonApiConverterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -53,8 +53,12 @@ class RestModule {
     @Singleton
     fun provideRetrofit(client: OkHttpClient, moshi: Moshi): Retrofit {
         return Retrofit.Builder()
-            .addConverterFactory(JsonApiConverterFactory.create(moshi))
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .addConverterFactory(GsonConverterFactory.create())
+//            .addConverterFactory(MoshiConverterFactory.create(moshi))
+//            .addConverterFactory(JsonApiConverterFactory())
+//            .addCallAdapterFactory(JsonApiCallAdapterFactory.create())
+//            .addConverterFactory(JsonApiConverterFactory.create(moshi))
+//            .addCallAdapterFactory(JsonApiC)
             .client(client)
             .baseUrl(BuildConfig.APIUrl)
             .build()

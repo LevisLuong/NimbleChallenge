@@ -94,6 +94,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Encryted DataStore
+    implementation(libs.preference.ktx)
+    implementation(libs.security.crypto)
+
     // KotlinX
     implementation(libs.kotlinx.serialization.json)
 
@@ -105,7 +109,7 @@ dependencies {
 
     // Retrofit
     implementation(libs.retrofit.core)
-    implementation(libs.retrofit.kotlin.serialization)
+    implementation(libs.retrofit.converter.gson)
 
     // OkHttp
     implementation(libs.okhttp.logging)
@@ -117,6 +121,7 @@ dependencies {
     implementation(libs.moshi.jsonapi)
     implementation(libs.moshi.jsonapi.retrofit.converter)
     ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
+    implementation("tech.jorgecastro:retrofit-jsonapi-converter:1.0.0-beta3")
 
     // Coil
     implementation(libs.coil.compose)

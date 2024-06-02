@@ -1,5 +1,6 @@
 package com.levis.nimblechallenge.domain.usecases
 
+import android.util.Log
 import com.levis.nimblechallenge.core.utils.useCaseFlow
 import com.levis.nimblechallenge.data.network.request.LoginRequest
 import com.levis.nimblechallenge.di.qualifiers.IoDispatcher
@@ -14,6 +15,7 @@ class LoginUseCase @Inject constructor(
 
     fun login(loginRequest: LoginRequest) =
         useCaseFlow(coroutineDispatcher) {
-            userRepository.login(loginRequest)
+            val response = userRepository.login(loginRequest)
+            Log.d("LoginUseCase", "login info: ${response}")
         }
 }

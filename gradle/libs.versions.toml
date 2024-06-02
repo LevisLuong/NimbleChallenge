@@ -18,8 +18,11 @@ moshiJsonapi = "3.5.0"
 okhttp = "4.11.0"
 retrofit = "2.9.0"
 retrofitKotlinxSerializationJson = "1.0.0"
+securityCryptoDatastorePreferences = "1.0.0"
 spotlessPluginGradle = "6.19.0"
 kotlinxSerializationJson = "1.5.0"
+preferenceKtx = "1.2.1"
+securityCrypto = "1.1.0-alpha06"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,9 +51,13 @@ hilt-hilt-compiler = { group = "com.google.dagger", name = "dagger-compiler", ve
 #hilt-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltExtenstions" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hiltAndroid" }
 
+# SharedPreferences
+preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
+security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
+
 # Retrofit
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationJson" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 
 # OkHttp
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
@@ -61,6 +68,7 @@ moshi-jsonapi = { module = "moe.banana:moshi-jsonapi", version.ref = "moshiJsona
 moshi-jsonapi-retrofit-converter = { module = "moe.banana:moshi-jsonapi-retrofit-converter", version.ref = "moshiJsonapi" }
 
 # ktlint
+security-crypto-datastore-preferences = { module = "io.github.osipxd:security-crypto-datastore-preferences", version.ref = "securityCryptoDatastorePreferences" }
 spotless-plugin-gradle = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotlessPluginGradle" }
 
 # KotlinX

@@ -20,7 +20,7 @@ suspend inline fun <T> safeUseCase(
 } catch (e: DataException) {
     UseCaseResult.Error(e.mapError())
 } catch (e: Exception) {
-    UseCaseResult.Error(DataException.Unknown)
+    UseCaseResult.Error(DataException.Unknown(e.message))
 }
 
 @Suppress("TooGenericExceptionCaught")
@@ -34,7 +34,8 @@ inline fun <T> useCaseFlow(
     } catch (e: DataException) {
         emit(UseCaseResult.Error(e.mapError()))
     } catch (e: Exception) {
-        emit(UseCaseResult.Error(DataException.Unknown))
+        e.printStackTrace()
+        UseCaseResult.Error(DataException.Unknown(e.message))
     }
 }.flowOn(coroutineDispatcher)
 
@@ -49,7 +50,7 @@ inline fun useCaseWithoutBodyFlow(
     } catch (e: DataException) {
         emit(UseCaseResult.Error(e.mapError()))
     } catch (e: Exception) {
-        emit(UseCaseResult.Error(DataException.Unknown))
+        UseCaseResult.Error(DataException.Unknown(e.message))
     }
 }.flowOn(coroutineDispatcher)
 

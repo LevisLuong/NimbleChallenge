@@ -4,35 +4,31 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.levis.nimblechallenge.R
-import com.levis.nimblechallenge.presentation.navigation.ScreenNavigation
 import com.levis.nimblechallenge.presentation.theme.NimbleChallengeTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SplashScreen(
-    navController: NavHostController = rememberNavController(),
+    viewModel: SplashViewModel = hiltViewModel(),
+    onGoToHome: () -> Unit,
+    onGoToLogin: () -> Unit
 ) {
-    val rememberCoroutineScope = rememberCoroutineScope()
-    LaunchedEffect(key1 = true) {
-        rememberCoroutineScope.launch {
-            delay(2000)
-            navController.navigate(ScreenNavigation.Login.route) {
-                popUpTo(ScreenNavigation.Splash.route) {
-                    inclusive = true
-                }
+    LaunchedEffect(viewModel.navEvent) {
+        viewModel.navEvent.collectLatest {
+            when (it) {
+                SplashNavEvent.Home -> onGoToHome.invoke()
+                SplashNavEvent.Login -> onGoToLogin.invoke()
             }
         }
     }
+
     SplashContent()
 }
 

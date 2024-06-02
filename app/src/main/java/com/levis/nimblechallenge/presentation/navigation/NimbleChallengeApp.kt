@@ -26,7 +26,22 @@ fun NimbleChallengeNavHost(
     val activity = (LocalContext.current as Activity)
     NavHost(navController = navController, startDestination = ScreenNavigation.Splash.route) {
         composable(route = ScreenNavigation.Splash.route) {
-            SplashScreen(navController = navController)
+            SplashScreen(
+                onGoToHome = {
+                    navController.navigate(ScreenNavigation.Home.route) {
+                        popUpTo(ScreenNavigation.Splash.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onGoToLogin = {
+                    navController.navigate(ScreenNavigation.Login.route) {
+                        popUpTo(ScreenNavigation.Splash.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
         composable(route = ScreenNavigation.Login.route) {
             LoginScreen(

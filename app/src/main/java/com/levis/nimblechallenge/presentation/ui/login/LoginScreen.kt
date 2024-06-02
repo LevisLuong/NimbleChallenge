@@ -115,7 +115,6 @@ fun LoginScreen(
         }
         ImageLogoComponent()
         LoginContent(
-            isLoadingState = isLoadingState,
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxWidth()
@@ -194,7 +193,6 @@ fun ImageLogoComponent(modifier: Modifier = Modifier) {
 
 @Composable
 fun LoginContent(
-    isLoadingState: Boolean,
     modifier: Modifier = Modifier,
     onClickedLogin: (String, String) -> Unit
 ) {
@@ -207,8 +205,8 @@ fun LoginContent(
 
     val focusManager = LocalFocusManager.current
 
-    var email by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("luongxuantrung@gmail.com") }
+    var password by rememberSaveable { mutableStateOf("12345678") }
 
     AnimatedVisibility(
         visible,

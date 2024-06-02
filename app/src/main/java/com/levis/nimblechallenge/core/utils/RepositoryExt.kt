@@ -1,5 +1,6 @@
 package com.levis.nimblechallenge.core.utils
 
+import com.levis.nimblechallenge.data.network.dtos.BaseDataResponse
 import com.levis.nimblechallenge.domain.mappers.toException
 import retrofit2.Response
 
@@ -23,4 +24,10 @@ inline fun <T, R> Response<T>.mapSuccess(
     } else {
         throw toException()
     }
+}
+
+inline fun <T, R> BaseDataResponse<T>.mapSuccessData(
+    crossinline block: (T) -> R
+): R {
+    return block(this.data)
 }

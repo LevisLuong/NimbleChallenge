@@ -21,6 +21,7 @@ import com.levis.nimblechallenge.presentation.theme.White20
 
 @Composable
 fun DotsIndicator(
+    modifier: Modifier = Modifier,
     totalDots: Int,
     selectedIndex: Int,
     selectedColor: Color,
@@ -32,9 +33,8 @@ fun DotsIndicator(
 
     LazyRow(
         state = listState,
-        modifier = Modifier
+        modifier = modifier
             .wrapContentSize()
-            .padding(horizontal = 20.dp)
     ) {
         items(totalDots) { index ->
             if (index == selectedIndex) {

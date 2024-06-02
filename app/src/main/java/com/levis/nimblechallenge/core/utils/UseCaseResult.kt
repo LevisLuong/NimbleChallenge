@@ -4,8 +4,10 @@ import com.levis.nimblechallenge.domain.mappers.mapError
 import com.levis.nimblechallenge.domain.model.error.DataException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
 
 sealed class UseCaseResult<out T> {
@@ -35,9 +37,20 @@ inline fun <T> useCaseFlow(
         emit(UseCaseResult.Error(e.mapError()))
     } catch (e: Exception) {
         e.printStackTrace()
-        UseCaseResult.Error(DataException.Unknown(e.message))
+        emit(UseCaseResult.Error(DataException.Unknown(e.message)))
     }
 }.flowOn(coroutineDispatcher)
+
+fun <T : Any> useCaseFlowPaging(
+    flow: Flow<T>,
+): Flow<UseCaseResult<T>> {
+    return flow.map {
+        UseCaseResult.Success(it)
+    }.catch {
+        it.printStackTrace()
+        UseCaseResult.Error(it.mapError())
+    }
+}
 
 @Suppress("TooGenericExceptionCaught")
 inline fun useCaseWithoutBodyFlow(

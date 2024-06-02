@@ -1,5 +1,6 @@
 package com.levis.nimblechallenge.presentation.ui.home
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
@@ -25,13 +26,18 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,37 +46,110 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.levis.nimblechallenge.R
-import com.levis.nimblechallenge.presentation.theme.Black10
+import com.levis.nimblechallenge.core.common.dummySurvey
+import com.levis.nimblechallenge.core.utils.format
+import com.levis.nimblechallenge.domain.model.survey.SurveyModel
 import com.levis.nimblechallenge.presentation.theme.NimbleChallengeTheme
 import com.levis.nimblechallenge.presentation.theme.White20
 import com.levis.nimblechallenge.presentation.ui.components.DotsIndicator
 import com.levis.nimblechallenge.presentation.ui.components.ProfileDrawer
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SurveyListContent() {
+fun SurveyScreen(
+    viewModel: SurveyListViewModel = hiltViewModel(),
+    onGoToLogin: () -> Unit,
+    onGoToDetail: (String) -> Unit
+) {
+    val context = LocalContext.current
+    val surveyList = viewModel.surveyList.collectAsLazyPagingItems()
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.errorMutableSharedFlow.collectLatest {
+            Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(viewModel.navEvent) {
+        viewModel.navEvent.collectLatest {
+            when (it) {
+                SurveyNavEvent.Login -> onGoToLogin.invoke()
+                SurveyNavEvent.SurveyDetail -> onGoToDetail.invoke("")
+            }
+        }
+    }
+
+    when (val refreshState = surveyList.loadState.refresh) {
+        is LoadState.Error -> {
+            SurveyListContent(
+                surveyList = surveyList,
+//        navigateToDetails = { onEvent(HomeNavEvent.SurveyDetails(it)) },
+                onLogOut = { viewModel.logout() }
+            )
+            Toast.makeText(
+                context,
+                refreshState.error.message ?: "Error fetching data.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        LoadState.Loading -> {
+            SurveyListLoading()
+        }
+
+        else -> SurveyListContent(
+            surveyList = surveyList,
+//        navigateToDetails = { onEvent(HomeNavEvent.SurveyDetails(it)) },
+            onLogOut = { viewModel.logout() }
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@Composable
+fun SurveyListContent(
+    surveyList: LazyPagingItems<SurveyModel>,
+    onLogOut: () -> Unit
+) {
     val scope = rememberCoroutineScope()
-    val pageCount = 3
+    val pageCount = surveyList.itemCount
     val pagerState = rememberPagerState(
         pageCount = { pageCount }
     )
+
+    val isRefreshing = surveyList.loadState.refresh is LoadState.Loading
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            scope.launch {
+                pagerState.scrollToPage(0)
+                surveyList.refresh()
+            }
+        },
+    )
+
     var isDrawerOpen by remember {
         mutableStateOf(false)
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -78,33 +157,39 @@ fun SurveyListContent() {
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
             ) { scope.launch { isDrawerOpen = false } }
+            .pullRefresh(pullRefreshState)
     ) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            SurveyImage(imageUrl = "https://picsum.photos/200/300")
+            SurveyImage(surveyList.peek(page)?.coverImageUrl ?: "")
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .padding(vertical = 16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+        if (surveyList.itemSnapshotList.isNotEmpty() &&
+            surveyList[pagerState.currentPage] != null
         ) {
-            TopView(
-                survey = "",
-                onProfileClicked = { scope.launch { isDrawerOpen = true } }
-            )
-            BottomView(
-                pageCount = pageCount,
-                pagerState = pagerState,
-                survey = "",
-                navigateToDetails = {}
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .padding(vertical = 16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                TopView(
+                    survey = surveyList[pagerState.currentPage]!!,
+                    onProfileClicked = { scope.launch { isDrawerOpen = true } }
+                )
+                BottomView(
+                    pageCount = pageCount,
+                    pagerState = pagerState,
+                    survey = surveyList[pagerState.currentPage]!!,
+                    navigateToDetails = {}
+                )
+            }
         }
+
         AnimatedVisibility(
             visible = isDrawerOpen,
             enter = slideInHorizontally(initialOffsetX = { w -> w }) + expandHorizontally(
@@ -118,25 +203,32 @@ fun SurveyListContent() {
                 .align(Alignment.TopEnd)
         ) {
             ProfileDrawer(
-                onLogOut = {},
+                onLogOut = onLogOut,
                 modifier = Modifier
                     .width(240.dp)
                     .align(Alignment.TopEnd)
             )
         }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            contentColor = Color.DarkGray,
+        )
     }
 }
 
 @Composable
 fun TopView(
-    survey: Any,
+    survey: SurveyModel,
     onProfileClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Text vurvey".uppercase(),
+            text = survey.createdAt?.format()?.uppercase() ?: "",
             style = MaterialTheme.typography.bodySmall.copy(color = White),
             modifier = Modifier
                 .fillMaxWidth()
@@ -176,7 +268,7 @@ fun TopView(
 fun BottomView(
     pageCount: Int,
     pagerState: PagerState,
-    survey: Any,
+    survey: SurveyModel,
     navigateToDetails: (String) -> Unit
 ) {
     Column(
@@ -184,8 +276,8 @@ fun BottomView(
             .fillMaxWidth()
             .padding(20.dp)
     ) {
-//        PagerIndicator(pageCount = pageCount, pagerState = pagerState)
         DotsIndicator(
+            modifier = Modifier.padding(bottom = 16.dp),
             totalDots = pageCount,
             selectedIndex = pagerState.currentPage,
             selectedColor = White,
@@ -194,7 +286,7 @@ fun BottomView(
             space = 5.dp
         )
         Text(
-            text = "Career training and development",
+            text = survey.title,
             style = MaterialTheme.typography.headlineMedium.copy(
                 color = White,
                 fontWeight = FontWeight.ExtraBold,
@@ -209,7 +301,7 @@ fun BottomView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Building a workplace culture that prioritizes belonging and inclusion asdas das",
+                text = survey.description,
                 style = MaterialTheme.typography.bodyMedium.copy(color = White),
                 textAlign = TextAlign.Left,
                 maxLines = 2,
@@ -241,30 +333,6 @@ fun BottomView(
     }
 }
 
-//@OptIn(ExperimentalFoundationApi::class)
-//@Composable
-//fun PagerIndicator(
-//    pageCount: Int,
-//    pagerState: PagerState
-//) {
-//    Row(
-//        Modifier
-//            .height(50.dp),
-//        horizontalArrangement = Arrangement.Center,
-//        verticalAlignment = Alignment.CenterVertically,
-//    ) {
-//        repeat(pageCount) { iteration ->
-//            val color = if (pagerState.currentPage == iteration) White else Color.Gray
-//            Box(
-//                modifier = Modifier
-//                    .padding(vertical = 8.dp, horizontal = 4.dp)
-//                    .background(color, CircleShape)
-//                    .size(8.dp)
-//            )
-//        }
-//    }
-//}
-
 @Composable
 fun SurveyImage(
     imageUrl: String,
@@ -276,7 +344,7 @@ fun SurveyImage(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Black10,
+                        Black,
                         Black
                     )
                 )
@@ -295,7 +363,7 @@ fun SurveyImage(
 @Composable
 fun TopViewPreview() {
     NimbleChallengeTheme {
-        TopView(survey = "", onProfileClicked = {})
+        TopView(survey = dummySurvey, onProfileClicked = {})
     }
 }
 
@@ -310,7 +378,7 @@ fun BottomViewPreview() {
                 initialPage = 0,
                 pageCount = { 3 }
             ),
-            survey = "",
+            survey = dummySurvey,
             navigateToDetails = {}
         )
     }

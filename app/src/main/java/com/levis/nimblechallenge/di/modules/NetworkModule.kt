@@ -1,7 +1,13 @@
 package com.levis.nimblechallenge.di.modules
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.levis.nimblechallenge.BuildConfig
+import com.levis.nimblechallenge.core.common.DATE_TIME_PATTERN_RESPONSE
 import com.levis.nimblechallenge.data.network.Api
+import com.levis.nimblechallenge.data.network.adapter.AuthInterceptor
+import com.levis.nimblechallenge.data.network.adapter.JsonApiResponseDeserializer
+import com.levis.nimblechallenge.data.network.dtos.BaseDataResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -19,7 +25,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class RestModule {
+class NetworkModule {
 
     @Provides
     @Singleton
@@ -32,8 +38,19 @@ class RestModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(): OkHttpClient {
+    fun provideGson(): Gson =
+        GsonBuilder()
+            .setDateFormat(DATE_TIME_PATTERN_RESPONSE)
+            .registerTypeAdapter(BaseDataResponse::class.java, JsonApiResponseDeserializer<Any>())
+            .setLenient()
+            .setPrettyPrinting()
+            .create()
+
+    @Provides
+    @Singleton
+    fun provideHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
         val clientBuilder = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
             .connectTimeout(45, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
@@ -51,9 +68,9 @@ class RestModule {
     @ExperimentalSerializationApi
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient, moshi: Moshi): Retrofit {
+    fun provideRetrofit(client: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
 //            .addConverterFactory(MoshiConverterFactory.create(moshi))
 //            .addConverterFactory(JsonApiConverterFactory())
 //            .addCallAdapterFactory(JsonApiCallAdapterFactory.create())

@@ -1,8 +1,10 @@
 package com.levis.nimblechallenge.domain.repository
 
+import androidx.paging.PagingData
+import com.levis.nimblechallenge.domain.model.survey.SurveyModel
 import kotlinx.coroutines.flow.Flow
 
 interface SurveyRepository {
-    suspend fun getSurveyList(): Flow<Any>
-    suspend fun getSurveyDetails(id: String): Flow<Any>
+    fun getSurveyList(): Flow<PagingData<SurveyModel>>
+    fun getSurveyDetails(id: String): Flow<Any>
 }

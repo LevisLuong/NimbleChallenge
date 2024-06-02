@@ -8,4 +8,6 @@ data class SurveyModel(
     val description: String,
     val coverImageUrl: String,
     val createdAt: Date?
-)
+) {
+    val largeCoverImageUrl = "${coverImageUrl}l"
+}

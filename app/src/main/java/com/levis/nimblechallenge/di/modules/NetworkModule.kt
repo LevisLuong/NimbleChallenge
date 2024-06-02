@@ -5,11 +5,10 @@ import com.google.gson.GsonBuilder
 import com.levis.nimblechallenge.BuildConfig
 import com.levis.nimblechallenge.core.common.DATE_TIME_PATTERN_RESPONSE
 import com.levis.nimblechallenge.data.network.Api
+import com.levis.nimblechallenge.data.network.adapter.AuthAuthenticator
 import com.levis.nimblechallenge.data.network.adapter.AuthInterceptor
 import com.levis.nimblechallenge.data.network.adapter.JsonApiResponseDeserializer
 import com.levis.nimblechallenge.data.network.dtos.BaseDataResponse
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,15 +28,6 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideMoshi(): Moshi {
-        return Moshi
-            .Builder()
-            .addLast(KotlinJsonAdapterFactory())
-            .build()
-    }
-
-    @Provides
-    @Singleton
     fun provideGson(): Gson =
         GsonBuilder()
             .setDateFormat(DATE_TIME_PATTERN_RESPONSE)
@@ -48,8 +38,12 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
+    fun provideHttpClient(
+        authInterceptor: AuthInterceptor,
+        authAuthenticator: AuthAuthenticator
+    ): OkHttpClient {
         val clientBuilder = OkHttpClient.Builder()
+            .authenticator(authAuthenticator)
             .addInterceptor(authInterceptor)
             .connectTimeout(45, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
@@ -71,11 +65,6 @@ class NetworkModule {
     fun provideRetrofit(client: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(gson))
-//            .addConverterFactory(MoshiConverterFactory.create(moshi))
-//            .addConverterFactory(JsonApiConverterFactory())
-//            .addCallAdapterFactory(JsonApiCallAdapterFactory.create())
-//            .addConverterFactory(JsonApiConverterFactory.create(moshi))
-//            .addCallAdapterFactory(JsonApiC)
             .client(client)
             .baseUrl(BuildConfig.APIUrl)
             .build()

@@ -5,4 +5,7 @@
     <string name="email">Email</string>
     <string name="forgot">Forgot?</string>
     <string name="logout">Logout</string>
+    <string name="retry">Retry</string>
+    <string name="forgot_password">Enter your email to receive instructions for resetting your password.</string>
+    <string name="reset">Reset</string>
 </resources>

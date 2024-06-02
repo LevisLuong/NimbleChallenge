@@ -100,10 +100,11 @@ fun SurveyScreen(
 
     when (val refreshState = surveyList.loadState.refresh) {
         is LoadState.Error -> {
-            SurveyListContent(
-                surveyList = surveyList,
-//        navigateToDetails = { onEvent(HomeNavEvent.SurveyDetails(it)) },
-                onLogOut = { viewModel.logout() }
+            SurveyPageErrorMessage(
+                message = refreshState.error.message ?: "An error occurred.",
+                onRetryClick = {
+                    surveyList.retry()
+                }
             )
             Toast.makeText(
                 context,
@@ -163,7 +164,7 @@ fun SurveyListContent(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            SurveyImage(surveyList.peek(page)?.coverImageUrl ?: "")
+            SurveyImage(surveyList.peek(page)?.largeCoverImageUrl ?: "")
         }
 
         if (surveyList.itemSnapshotList.isNotEmpty() &&

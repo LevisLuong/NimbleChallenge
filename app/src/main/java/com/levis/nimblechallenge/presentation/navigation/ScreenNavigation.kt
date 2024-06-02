@@ -12,6 +12,8 @@ sealed class ScreenNavigation(
 
     data object Login : ScreenNavigation("login")
 
+    data object ForgotPassword : ScreenNavigation("forgot")
+
     data object Home : ScreenNavigation("home")
 
     data object SurveyDetail : ScreenNavigation(

@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.levis.nimblechallenge.presentation.ui.forgotpassword.ForgotPasswordScreen
 import com.levis.nimblechallenge.presentation.ui.home.SurveyScreen
 import com.levis.nimblechallenge.presentation.ui.login.LoginScreen
 import com.levis.nimblechallenge.presentation.ui.splash.SplashScreen
@@ -24,7 +25,10 @@ fun NimbleChallengeNavHost(
     navController: NavHostController
 ) {
     val activity = (LocalContext.current as Activity)
-    NavHost(navController = navController, startDestination = ScreenNavigation.Splash.route) {
+    NavHost(
+        navController = navController,
+        startDestination = ScreenNavigation.Splash.route,
+    ) {
         composable(route = ScreenNavigation.Splash.route) {
             SplashScreen(
                 onGoToHome = {
@@ -53,7 +57,18 @@ fun NimbleChallengeNavHost(
                     }
                 },
                 onGoToForgotPassword = {
-
+                    navController.navigate(ScreenNavigation.ForgotPassword.route)
+                }
+            )
+        }
+        composable(route = ScreenNavigation.ForgotPassword.route) {
+            ForgotPasswordScreen(
+                onGoToLogin = {
+                    navController.navigate(ScreenNavigation.Login.route) {
+                        popUpTo(ScreenNavigation.ForgotPassword.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

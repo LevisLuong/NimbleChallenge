@@ -12,7 +12,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +22,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -121,7 +122,8 @@ fun LoginScreen(
                 .padding(24.dp),
             onClickedLogin = { email, password ->
                 viewModel.login(email, password)
-            }
+            },
+            onGoToForgotPassword = onGoToForgotPassword
         )
         if (isLoadingState) {
             Box(
@@ -194,7 +196,8 @@ fun ImageLogoComponent(modifier: Modifier = Modifier) {
 @Composable
 fun LoginContent(
     modifier: Modifier = Modifier,
-    onClickedLogin: (String, String) -> Unit
+    onClickedLogin: (String, String) -> Unit,
+    onGoToForgotPassword: () -> Unit
 ) {
     var visible by remember {
         mutableStateOf(false)
@@ -222,7 +225,10 @@ fun LoginContent(
         Column {
             InputEmailComponent(email, onTextChanged = { email = it })
             Spacer(modifier = Modifier.height(20.dp))
-            InputPasswordComponent(password, onTextChanged = { password = it })
+            InputPasswordComponent(
+                password, onTextChanged = { password = it },
+                onGoToForgotPassword = onGoToForgotPassword
+            )
             Spacer(modifier = Modifier.height(20.dp))
             FilledButton(
                 onClick = {
@@ -267,19 +273,13 @@ fun InputEmailComponent(
 @Composable
 fun InputPasswordComponent(
     password: String, onTextChanged: (String) -> Unit,
+    onGoToForgotPassword: () -> Unit,
     errorStatus: Boolean = false
 ) {
 
     val localFocusManager = LocalFocusManager.current
 
     Box(modifier = Modifier.fillMaxWidth()) {
-        Text(text = stringResource(R.string.forgot),
-            style = MaterialTheme.typography.bodyMedium,
-            color = White50,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(16.dp)
-                .clickable {})
         MyTextField(
             value = password,
             onValueChange = onTextChanged,
@@ -302,6 +302,16 @@ fun InputPasswordComponent(
             ),
             keyboardActions = KeyboardActions(onDone = { localFocusManager.clearFocus() })
         )
+        ClickableText(
+            text = AnnotatedString(stringResource(R.string.forgot)),
+            style = MaterialTheme.typography.bodyMedium.copy(color = White50),
+//            color = White50,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(16.dp),
+            onClick = {
+                onGoToForgotPassword.invoke()
+            })
     }
 }
 

@@ -1,10 +1,13 @@
 package com.levis.nimblechallenge.data.repository
 
+import com.levis.nimblechallenge.core.utils.repoCall
 import com.levis.nimblechallenge.data.local.datastore.LocalDataSource
 import com.levis.nimblechallenge.data.network.Api
 import com.levis.nimblechallenge.data.network.dtos.LoginTokenDto
+import com.levis.nimblechallenge.data.network.request.ForgotPasswordRequest
 import com.levis.nimblechallenge.data.network.request.LoginRequest
 import com.levis.nimblechallenge.data.network.request.LogoutRequest
+import com.levis.nimblechallenge.data.network.response.ForgotPasswordResponse
 import com.levis.nimblechallenge.domain.repository.AuthRepository
 import javax.inject.Inject
 
@@ -21,6 +24,13 @@ class AuthRepositoryImpl @Inject constructor(
                 localDataSource.saveTokenType(it.tokenType.orEmpty())
                 localDataSource.saveRefreshToken(it.refreshToken.orEmpty())
             }
+
+    override suspend fun forgotPassword(payload: ForgotPasswordRequest): ForgotPasswordResponse {
+        return repoCall {
+            api.forgotPassword(payload)
+        }
+
+    }
 
 
     override suspend fun logout() {

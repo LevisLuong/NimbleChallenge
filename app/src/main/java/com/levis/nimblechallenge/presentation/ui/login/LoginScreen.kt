@@ -78,11 +78,6 @@ fun LoginScreen(
 
     val isLoadingState = viewModel.loadingMutableStateFlow.collectAsState().value
 
-    var bgWindow by remember { mutableIntStateOf(R.drawable.bg_window) }
-    LaunchedEffect(key1 = Unit) {
-        bgWindow = R.drawable.bg_blur_overlay
-    }
-
     LaunchedEffect(viewModel.navEvent) {
         viewModel.navEvent.collectLatest {
             when (it) {
@@ -96,6 +91,28 @@ fun LoginScreen(
         viewModel.errorMutableSharedFlow.collectLatest {
             Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    LoginContent(
+        isLoadingState = isLoadingState,
+        onClickedLogin = { email, password ->
+            viewModel.login(email, password)
+        },
+        onGoToForgotPassword = onGoToForgotPassword
+    )
+
+}
+
+@Composable
+fun LoginContent(
+    isLoadingState: Boolean = false,
+    onClickedLogin: (String, String) -> Unit,
+    onGoToForgotPassword: () -> Unit
+) {
+
+    var bgWindow by rememberSaveable { mutableIntStateOf(R.drawable.bg_window) }
+    LaunchedEffect(key1 = bgWindow) {
+        bgWindow = R.drawable.bg_blur_overlay
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -115,14 +132,12 @@ fun LoginScreen(
             )
         }
         ImageLogoComponent()
-        LoginContent(
+        LoginInputContent(
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxWidth()
                 .padding(24.dp),
-            onClickedLogin = { email, password ->
-                viewModel.login(email, password)
-            },
+            onClickedLogin = onClickedLogin,
             onGoToForgotPassword = onGoToForgotPassword
         )
         if (isLoadingState) {
@@ -154,15 +169,15 @@ fun ImageLogoComponent(modifier: Modifier = Modifier) {
             )
         )
     }
-    val animatedSizeOffset by remember { mutableStateOf(Animatable(0f)) }
-    var visible by remember {
+    val animatedSizeOffset by rememberSaveable { mutableStateOf(Animatable(0f)) }
+    var visible by rememberSaveable {
         mutableStateOf(false)
     }
     LaunchedEffect(key1 = visible) {
         Log.d("trunglx--current thread", "Current thread " + Thread.currentThread().toString())
         visible = true
     }
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = animatedPosition, key2 = animatedSizeOffset) {
         awaitAll(async {
             animatedPosition.animateTo(targetValue = endPosition, animationSpec = keyframes {
                 durationMillis = ANIMATION_TIME_DURATION
@@ -194,15 +209,15 @@ fun ImageLogoComponent(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LoginContent(
+fun LoginInputContent(
     modifier: Modifier = Modifier,
     onClickedLogin: (String, String) -> Unit,
     onGoToForgotPassword: () -> Unit
 ) {
-    var visible by remember {
+    var visible by rememberSaveable {
         mutableStateOf(false)
     }
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = visible) {
         visible = true
     }
 
@@ -248,7 +263,6 @@ fun LoginContent(
 @Composable
 fun InputEmailComponent(
     email: String, onTextChanged: (String) -> Unit,
-    errorStatus: Boolean = false
 ) {
     MyTextField(
         value = email,
@@ -274,7 +288,6 @@ fun InputEmailComponent(
 fun InputPasswordComponent(
     password: String, onTextChanged: (String) -> Unit,
     onGoToForgotPassword: () -> Unit,
-    errorStatus: Boolean = false
 ) {
 
     val localFocusManager = LocalFocusManager.current
@@ -319,6 +332,14 @@ fun InputPasswordComponent(
 @Composable
 fun LoginScreenPreview() {
     NimbleChallengeTheme {
-        LoginScreen(onGoToHome = {}, onGoToForgotPassword = {})
+        LoginContent(onClickedLogin = { _, _ -> run {} }, onGoToForgotPassword = {})
+    }
+}
+
+@Preview
+@Composable
+fun LoginInputContentPreview() {
+    NimbleChallengeTheme {
+        LoginInputContent(onClickedLogin = { _, _ -> run {} }, onGoToForgotPassword = {})
     }
 }

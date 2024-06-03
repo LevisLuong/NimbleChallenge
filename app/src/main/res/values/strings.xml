@@ -8,4 +8,5 @@
     <string name="retry">Retry</string>
     <string name="forgot_password">Enter your email to receive instructions for resetting your password.</string>
     <string name="reset">Reset</string>
+    <string name="success_sent_email_forgot_password">We’ve email you instructions to reset your password.</string>
 </resources>

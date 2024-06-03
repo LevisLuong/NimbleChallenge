@@ -1,6 +1,5 @@
 package com.levis.nimblechallenge.presentation.ui.forgotpassword
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -27,12 +27,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -50,38 +52,70 @@ import com.levis.nimblechallenge.presentation.theme.Black10
 import com.levis.nimblechallenge.presentation.theme.NimbleChallengeTheme
 import com.levis.nimblechallenge.presentation.theme.White30
 import com.levis.nimblechallenge.presentation.theme.White70
+import com.levis.nimblechallenge.presentation.ui.components.CustomSnackBarMessage
 import com.levis.nimblechallenge.presentation.ui.components.FilledButton
 import com.levis.nimblechallenge.presentation.ui.components.MyTextField
+import com.levis.nimblechallenge.presentation.ui.components.contentCustomSnackBar
+import com.radusalagean.infobarcompose.InfoBar
 import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
 fun ForgotPasswordScreen(
+    viewModel: ForgotPasswordViewModel = hiltViewModel(),
     onGoToLogin: () -> Unit,
-    viewModel: ForgotPasswordViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val focusManager = LocalFocusManager.current
-
+    var snackBarMessage: CustomSnackBarMessage? by remember { mutableStateOf(null) }
     val isLoadingState = viewModel.loadingMutableStateFlow.collectAsState().value
-
-    var email by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(viewModel.responseForgotPassword) {
         viewModel.responseForgotPassword.collectLatest {
             if (it) {
-                // TODO show snack bar success
+                snackBarMessage =
+                    CustomSnackBarMessage(
+                        title = "Check your email.",
+                        textString = context.getString(R.string.success_sent_email_forgot_password)
+                    )
             }
         }
     }
 
     LaunchedEffect(key1 = Unit) {
         viewModel.errorMutableSharedFlow.collectLatest {
-            Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-            // TODO show snack bar error
+            snackBarMessage =
+                CustomSnackBarMessage(
+                    title = "Error.",
+                    textString = it.message,
+                    icon = Icons.Default.Error,
+                    iconColor = Red
+                )
         }
     }
 
+    ForgotPasswordContent(
+        snackBarMessage = snackBarMessage,
+        isLoadingState = isLoadingState,
+        onClickForgotPassword = { email ->
+            viewModel.forgotPassword(email)
+        },
+        onGoToLogin = onGoToLogin,
+        onDismissSnackBar = {
+            snackBarMessage = null
+        }
+    )
+}
+
+@Composable
+fun ForgotPasswordContent(
+    snackBarMessage: CustomSnackBarMessage? = null,
+    isLoadingState: Boolean = false,
+    onClickForgotPassword: (String) -> Unit = {},
+    onGoToLogin: () -> Unit = {},
+    onDismissSnackBar: () -> Unit = {},
+) {
+    val focusManager = LocalFocusManager.current
+    var email by rememberSaveable { mutableStateOf("") }
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -131,12 +165,12 @@ fun ForgotPasswordScreen(
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                     Spacer(modifier = Modifier.height(60.dp))
-                    InputEmailComponent(email, onTextChanged = { email = it })
+                    InputEmailComponent(email, onTextChanged = { text -> email = text })
                     Spacer(modifier = Modifier.height(24.dp))
                     FilledButton(
                         onClick = {
                             focusManager.clearFocus()
-                            viewModel.forgotPassword(email)
+                            onClickForgotPassword.invoke(email)
                         }, modifier = Modifier
                             .fillMaxWidth()
                             .testTag("btnReset")
@@ -144,6 +178,13 @@ fun ForgotPasswordScreen(
                         Text(text = stringResource(R.string.reset))
                     }
                 }
+
+                InfoBar(
+                    offeredMessage = snackBarMessage,
+                    content = contentCustomSnackBar,
+                    onDismiss = onDismissSnackBar
+                )
+
                 if (isLoadingState) {
                     Box(
                         modifier = Modifier
@@ -161,31 +202,12 @@ fun ForgotPasswordScreen(
             }
         }
     }
-
-
-}
-
-@Composable
-fun ImageLogoComponent(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_nimble_logo),
-            modifier = Modifier
-                .width(165.dp),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth
-        )
-    }
 }
 
 @Composable
 fun InputEmailComponent(
     email: String, onTextChanged: (String) -> Unit,
 ) {
-
     val focusManager = LocalFocusManager.current
     MyTextField(
         value = email,
@@ -212,6 +234,6 @@ fun InputEmailComponent(
 @Composable
 fun ForgotPasswordScreenPreview() {
     NimbleChallengeTheme {
-        ForgotPasswordScreen(onGoToLogin = {})
+        ForgotPasswordContent(onGoToLogin = {})
     }
 }

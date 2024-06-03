@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    id("kotlin-parcelize")
 }
 
 val localPropertiesFile = rootProject.file("local.properties")
@@ -35,19 +36,31 @@ android {
             applicationIdSuffix = ".dev"
 
             buildConfigField("String", "CLIENT_ID", localProperties.getProperty("CLIENT_ID_DEV"))
-            buildConfigField("String", "CLIENT_SECRET", localProperties.getProperty("CLIENT_SECRET_DEV"))
-            buildConfigField("String", "APIUrl", "\"https://nimble-survey-web-staging.herokuapp.com/\"")
+            buildConfigField(
+                "String",
+                "CLIENT_SECRET",
+                localProperties.getProperty("CLIENT_SECRET_DEV")
+            )
+            buildConfigField(
+                "String",
+                "APIUrl",
+                "\"https://nimble-survey-web-staging.herokuapp.com/\""
+            )
         }
         create("prod") {
             dimension = flavorDimensions[0]
             buildConfigField("String", "CLIENT_ID", localProperties.getProperty("CLIENT_ID"))
-            buildConfigField("String", "CLIENT_SECRET", localProperties.getProperty("CLIENT_SECRET"))
+            buildConfigField(
+                "String",
+                "CLIENT_SECRET",
+                localProperties.getProperty("CLIENT_SECRET")
+            )
             buildConfigField("String", "APIUrl", "\"https://survey-api.nimblehq.co/\"")
         }
     }
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -99,6 +112,7 @@ dependencies {
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.common.android)
     implementation(libs.androidx.paging.compose)
+    testImplementation(libs.androidx.paging.testing)
 
     // Room DB
     implementation(libs.androidx.room.common)
@@ -111,9 +125,6 @@ dependencies {
     // Encryted DataStore
     implementation(libs.preference.ktx)
     implementation(libs.security.crypto)
-
-    // KotlinX
-    implementation(libs.kotlinx.serialization.json)
 
     // Hilt
     implementation(libs.hilt.android)
@@ -128,15 +139,9 @@ dependencies {
     // OkHttp
     implementation(libs.okhttp.logging)
 
-    // Moshi Json API
-    implementation(libs.moshi)
-    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-    implementation(libs.moshi.jsonapi)
-    implementation(libs.moshi.jsonapi.retrofit.converter)
-    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
-    implementation("tech.jorgecastro:retrofit-jsonapi-converter:1.0.0-beta3")
-
     // Coil
     implementation(libs.coil.compose)
+
+    // UI
+    implementation(libs.info.bar.compose)
 }

@@ -19,7 +19,7 @@ sealed class ScreenNavigation(
     data object SurveyDetail : ScreenNavigation(
         route = "surveyDetail/{surveyId}",
         navArguments = listOf(navArgument("surveyId") {
-            type = NavType.StringType
+            type = NavType.StringType; nullable = true
         })
     ) {
         fun createRoute(surveyId: String) = "surveyDetail/${surveyId}"

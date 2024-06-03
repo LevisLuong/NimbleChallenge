@@ -93,7 +93,6 @@ fun SurveyScreen(
         viewModel.navEvent.collectLatest {
             when (it) {
                 SurveyNavEvent.Login -> onGoToLogin.invoke()
-                SurveyNavEvent.SurveyDetail -> onGoToDetail.invoke("")
             }
         }
     }
@@ -119,8 +118,8 @@ fun SurveyScreen(
 
         else -> SurveyListContent(
             surveyList = surveyList,
-//        navigateToDetails = { onEvent(HomeNavEvent.SurveyDetails(it)) },
-            onLogOut = { viewModel.logout() }
+            onLogOut = { viewModel.logout() },
+            onGoToDetail = onGoToDetail
         )
     }
 }
@@ -129,7 +128,8 @@ fun SurveyScreen(
 @Composable
 fun SurveyListContent(
     surveyList: LazyPagingItems<SurveyModel>,
-    onLogOut: () -> Unit
+    onLogOut: () -> Unit,
+    onGoToDetail: (String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val pageCount = surveyList.itemCount
@@ -186,7 +186,7 @@ fun SurveyListContent(
                     pageCount = pageCount,
                     pagerState = pagerState,
                     survey = surveyList[pagerState.currentPage]!!,
-                    navigateToDetails = {}
+                    navigateToDetails = onGoToDetail
                 )
             }
         }
@@ -312,7 +312,9 @@ fun BottomView(
                     .padding(end = 16.dp)
             )
             IconButton(
-                onClick = { },
+                onClick = {
+                    navigateToDetails.invoke(survey.id)
+                },
                 modifier = Modifier
                     .size(56.dp)
             ) {
@@ -360,7 +362,7 @@ fun SurveyImage(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun TopViewPreview() {
     NimbleChallengeTheme {
@@ -369,7 +371,7 @@ fun TopViewPreview() {
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun BottomViewPreview() {
     NimbleChallengeTheme {
@@ -385,7 +387,7 @@ fun BottomViewPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun SurveyImagePreview() {
     NimbleChallengeTheme {

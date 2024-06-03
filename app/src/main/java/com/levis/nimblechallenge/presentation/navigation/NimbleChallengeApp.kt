@@ -11,6 +11,7 @@ import com.levis.nimblechallenge.presentation.ui.forgotpassword.ForgotPasswordSc
 import com.levis.nimblechallenge.presentation.ui.home.SurveyScreen
 import com.levis.nimblechallenge.presentation.ui.login.LoginScreen
 import com.levis.nimblechallenge.presentation.ui.splash.SplashScreen
+import com.levis.nimblechallenge.presentation.ui.surveydetail.SurveyDetailScreen
 
 @Composable
 fun NimbleChallengeApp() {
@@ -24,7 +25,6 @@ fun NimbleChallengeApp() {
 fun NimbleChallengeNavHost(
     navController: NavHostController
 ) {
-    val activity = (LocalContext.current as Activity)
     NavHost(
         navController = navController,
         startDestination = ScreenNavigation.Splash.route,
@@ -64,11 +64,7 @@ fun NimbleChallengeNavHost(
         composable(route = ScreenNavigation.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onGoToLogin = {
-                    navController.navigate(ScreenNavigation.Login.route) {
-                        popUpTo(ScreenNavigation.ForgotPassword.route) {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStack()
                 }
             )
         }
@@ -81,8 +77,20 @@ fun NimbleChallengeNavHost(
                         }
                     }
                 },
-                onGoToDetail = {
-
+                onGoToDetail = { surveyId ->
+                    navController.navigate(ScreenNavigation.SurveyDetail.createRoute(surveyId))
+                }
+            )
+        }
+        composable(
+            route = ScreenNavigation.SurveyDetail.route,
+            arguments = ScreenNavigation.SurveyDetail.navArguments
+        ) {
+            val surveyId = it.arguments?.getString("surveyId")
+            SurveyDetailScreen(
+                surveyId = surveyId,
+                onBackRoute = {
+                    navController.popBackStack()
                 }
             )
         }

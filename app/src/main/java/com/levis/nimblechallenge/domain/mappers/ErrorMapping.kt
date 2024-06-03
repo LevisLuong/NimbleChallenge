@@ -4,10 +4,8 @@ package com.levis.nimblechallenge.domain.mappers
 import com.google.gson.Gson
 import com.levis.nimblechallenge.data.network.dtos.ErrorResponse
 import com.levis.nimblechallenge.domain.model.error.DataException
-import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
 import retrofit2.Response
-import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.ConnectException
 import java.net.UnknownHostException
@@ -54,11 +52,7 @@ fun parseErrorResponse(response: Response<*>?): ErrorResponse? {
     val jsonString = response?.errorBody()?.string()
     return try {
         jsonString?.let { Gson().fromJson(it, ErrorResponse::class.java) }
-    } catch (exception: IOException) {
-        null
-    } catch (exception: SerializationException) {
-        null
-    } catch (exception: IllegalStateException) {
+    } catch (exception: Exception) {
         null
     }
 }

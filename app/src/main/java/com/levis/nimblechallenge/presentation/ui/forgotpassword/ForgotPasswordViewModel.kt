@@ -14,7 +14,7 @@ class ForgotPasswordViewModel @Inject constructor(
     private val forgotPasswordUseCase: ForgotPasswordUseCase
 ) : BaseViewModel() {
 
-    private var _responseForgotPassword = MutableStateFlow<Boolean>(false)
+    private var _responseForgotPassword = MutableStateFlow(false)
     val responseForgotPassword = _responseForgotPassword.asStateFlow()
 
     fun forgotPassword(email: String) {

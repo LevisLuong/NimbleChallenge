@@ -4,6 +4,7 @@ coilCompose = "2.6.0"
 coreSplashscreen = "1.0.1"
 hiltAndroid = "2.49"
 hiltExtenstions = "1.2.0"
+infoBarCompose = "1.0.0"
 kotlin = "1.9.22"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -18,7 +19,6 @@ moshi = "1.15.1"
 moshiJsonapi = "3.5.0"
 okhttp = "4.11.0"
 retrofit = "2.9.0"
-retrofitKotlinxSerializationJson = "1.0.0"
 securityCryptoDatastorePreferences = "1.0.0"
 spotlessPluginGradle = "6.19.0"
 kotlinxSerializationJson = "1.5.0"
@@ -33,6 +33,7 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+info-bar-compose = { module = "com.radusalagean:info-bar-compose", version.ref = "infoBarCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -51,6 +52,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-paging-common-android = { group = "androidx.paging", name = "paging-common-android", version.ref = "paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version = "paging" }
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "paging" }
+androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging" }
 
 # Dagger Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }

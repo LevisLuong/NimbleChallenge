@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.AnimationVector2D
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.keyframes
@@ -34,7 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -160,24 +162,45 @@ fun LoginContent(
 @Composable
 fun ImageLogoComponent(modifier: Modifier = Modifier) {
     // Make animation of this image from center height to top
+
+    val animatePositionSaver = Saver<Animatable<Offset, AnimationVector2D>, Map<String, Float>>(
+        save = { mapOf("x" to it.value.x, "y" to it.value.y) },
+        restore = {
+            val offSet = Offset(it["x"] ?: 0f, it["y"] ?: 0f)
+            Animatable(offSet, Offset.VectorConverter)
+        }
+    )
+    val animateSizeOffsetSaver = Saver<Animatable<Float, AnimationVector1D>, Float>(
+        save = { it.value },
+        restore = { Animatable(it) }
+    )
+
     val startPosition = Offset(0f, 0f)
     val endPosition = Offset(0f, -200f)
-    val animatedPosition by remember {
+    val animatedPosition by rememberSaveable(
+        stateSaver = animatePositionSaver
+    ) {
         mutableStateOf(
             Animatable(
                 startPosition, Offset.VectorConverter
             )
         )
     }
-    val animatedSizeOffset by rememberSaveable { mutableStateOf(Animatable(0f)) }
+    val animatedSizeOffset by rememberSaveable(stateSaver = animateSizeOffsetSaver) {
+        mutableStateOf(
+            Animatable(
+                0f
+            )
+        )
+    }
     var visible by rememberSaveable {
         mutableStateOf(false)
     }
-    LaunchedEffect(key1 = visible) {
+    LaunchedEffect(visible) {
         Log.d("trunglx--current thread", "Current thread " + Thread.currentThread().toString())
         visible = true
     }
-    LaunchedEffect(key1 = animatedPosition, key2 = animatedSizeOffset) {
+    LaunchedEffect(Unit) {
         awaitAll(async {
             animatedPosition.animateTo(targetValue = endPosition, animationSpec = keyframes {
                 durationMillis = ANIMATION_TIME_DURATION
@@ -318,7 +341,6 @@ fun InputPasswordComponent(
         ClickableText(
             text = AnnotatedString(stringResource(R.string.forgot)),
             style = MaterialTheme.typography.bodyMedium.copy(color = White50),
-//            color = White50,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(16.dp),

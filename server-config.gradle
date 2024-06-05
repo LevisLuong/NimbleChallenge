@@ -1,8 +1,0 @@
-ext {
-    dev = [
-            api_url: '"https://nimble-survey-web-staging.herokuapp.com/"',
-    ]
-    prod = [
-            api_url: '"https://survey-api.nimblehq.co/"',
-    ]
-}

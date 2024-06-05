@@ -148,6 +148,7 @@ fun ForgotPasswordContent(
                             .clickable {
                                 onGoToLogin.invoke()
                             }
+                            .testTag("btnBack")
                     )
                     Spacer(modifier = Modifier.height(54.dp))
                     Image(

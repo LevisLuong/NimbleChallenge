@@ -1,3 +1,4 @@
+
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -13,6 +14,10 @@ val localPropertiesFile = rootProject.file("local.properties")
 val localProperties = Properties()
 localProperties.load(FileInputStream(localPropertiesFile))
 
+val signingPropertiesFile = rootProject.file("signing.properties")
+val signingProperties = Properties()
+signingProperties.load(FileInputStream(signingPropertiesFile))
+
 android {
     namespace = "com.levis.nimblechallenge"
     compileSdk = 34
@@ -25,10 +30,31 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         vectorDrawables {
             useSupportLibrary = true
         }
     }
+
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("../keystore/debug.keystore")
+            storePassword = "123456"
+            keyAlias = "debugkey"
+            keyPassword = "123456"
+        }
+        create("release") {
+            try {
+                storeFile = file("../keystore/release.keystore")
+                storePassword = signingProperties.getProperty("KEYSTORE_PASSWORD") as String
+                keyAlias = signingProperties.getProperty("KEY_ALIAS") as String
+                keyPassword = signingProperties.getProperty("KEY_PASSWORD") as String
+            } catch (ex: Exception) {
+                throw InvalidUserDataException("You should define KEYSTORE_PASSWORD and KEY_PASSWORD in gradle.properties.")
+            }
+        }
+    }
+
     flavorDimensions.add("environment")
     productFlavors {
         create("dev") {
@@ -42,9 +68,7 @@ android {
                 localProperties.getProperty("CLIENT_SECRET_DEV")
             )
             buildConfigField(
-                "String",
-                "APIUrl",
-                "\"https://nimble-survey-web-staging.herokuapp.com/\""
+                "String", "APIUrl", "\"https://nimble-survey-web-staging.herokuapp.com/\""
             )
         }
         create("prod") {
@@ -59,6 +83,9 @@ android {
         }
     }
     buildTypes {
+        debug{
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -86,6 +113,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    packaging {
+        resources.excludes.add("META-INF/*")
+    }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -100,6 +133,7 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -108,10 +142,17 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Test
+    testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotest)
+    testImplementation(libs.turbine)
+
     // Paging
     implementation(libs.androidx.paging.runtime)
-    implementation(libs.androidx.paging.common.android)
     implementation(libs.androidx.paging.compose)
+    testImplementation(libs.androidx.paging.common)
     testImplementation(libs.androidx.paging.testing)
 
     // Room DB

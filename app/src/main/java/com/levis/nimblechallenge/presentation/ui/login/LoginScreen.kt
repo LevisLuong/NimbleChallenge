@@ -285,7 +285,8 @@ fun LoginInputContent(
 
 @Composable
 fun InputEmailComponent(
-    email: String, onTextChanged: (String) -> Unit,
+    email: String,
+    onTextChanged: (String) -> Unit,
 ) {
     MyTextField(
         value = email,
@@ -309,7 +310,8 @@ fun InputEmailComponent(
 
 @Composable
 fun InputPasswordComponent(
-    password: String, onTextChanged: (String) -> Unit,
+    password: String,
+    onTextChanged: (String) -> Unit,
     onGoToForgotPassword: () -> Unit,
 ) {
 

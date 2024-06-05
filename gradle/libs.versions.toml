@@ -10,14 +10,17 @@ coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
+kotlinxCoroutinesTest = "1.8.1"
 lifecycleKtx = "2.8.0"
 activityCompose = "1.9.0"
 composeBom = "2024.05.00"
 ksp = "1.9.22-1.0.16"
 material = "1.6.7"
+mockkAndroid = "1.13.5"
 moshi = "1.15.1"
 moshiJsonapi = "3.5.0"
 okhttp = "4.11.0"
+pagingTesting = "3.3.0"
 retrofit = "2.9.0"
 securityCryptoDatastorePreferences = "1.0.0"
 spotlessPluginGradle = "6.19.0"
@@ -26,6 +29,10 @@ preferenceKtx = "1.2.1"
 securityCrypto = "1.1.0-alpha06"
 room = "2.6.1"
 paging = "3.3.0"
+mockk = "1.13.10"
+kotest = "5.8.1"
+turbine = "1.1.0"
+core = "1.43.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,18 +55,25 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+# Test
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+kotest = { group = "io.kotest", name = "kotest-assertions-core", version.ref = "kotest" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+
 # Paging
-androidx-paging-common-android = { group = "androidx.paging", name = "paging-common-android", version.ref = "paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version = "paging" }
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "paging" }
-androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging" }
+androidx-paging-common = { group = "androidx.paging", name = "paging-common", version.ref = "paging" }
+androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "pagingTesting" }
 
 # Dagger Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltExtenstions" }
 hilt-dagger-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltAndroid" }
 hilt-hilt-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "hiltAndroid" }
-#hilt-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltExtenstions" }
+hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltAndroid" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hiltAndroid" }
 
 # SharedPreferences
@@ -92,6 +106,7 @@ androidx_room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx_room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 androidx_room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx_room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
+core = { group = "com.google.ar", name = "core", version.ref = "core" }
 
 # Other
 

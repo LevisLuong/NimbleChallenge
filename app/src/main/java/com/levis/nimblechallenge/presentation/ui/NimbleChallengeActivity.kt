@@ -13,12 +13,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class NimbleChallengeActivity : ComponentActivity() {
 
-    private val splashViewModel: SplashViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
-//        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-//        splashScreen.setKeepOnScreenCondition()
         enableEdgeToEdge()
         setContent {
             NimbleChallengeTheme {

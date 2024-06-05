@@ -6,5 +6,4 @@ import kotlinx.coroutines.flow.Flow
 
 interface SurveyRepository {
     fun getSurveyList(): Flow<PagingData<SurveyModel>>
-    fun getSurveyDetails(id: String): Flow<Any>
 }

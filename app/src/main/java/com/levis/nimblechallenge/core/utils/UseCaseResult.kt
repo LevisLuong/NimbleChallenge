@@ -19,10 +19,8 @@ suspend inline fun <T> safeUseCase(
     crossinline block: suspend () -> T,
 ): UseCaseResult<T> = try {
     UseCaseResult.Success(block())
-} catch (e: DataException) {
-    UseCaseResult.Error(e.mapError())
 } catch (e: Exception) {
-    UseCaseResult.Error(DataException.Unknown(e.message))
+    UseCaseResult.Error(e.mapError())
 }
 
 @Suppress("TooGenericExceptionCaught")
@@ -33,11 +31,9 @@ inline fun <T> useCaseFlow(
     try {
         val repoResult = block()
         emit(UseCaseResult.Success(repoResult))
-    } catch (e: DataException) {
-        emit(UseCaseResult.Error(e.mapError()))
     } catch (e: Exception) {
         e.printStackTrace()
-        emit(UseCaseResult.Error(DataException.Unknown(e.message)))
+        emit(UseCaseResult.Error(e.mapError()))
     }
 }.flowOn(coroutineDispatcher)
 
@@ -60,10 +56,8 @@ inline fun useCaseWithoutBodyFlow(
     try {
         val repoResult = block()
         emit(UseCaseResult.Success(repoResult))
-    } catch (e: DataException) {
-        emit(UseCaseResult.Error(e.mapError()))
     } catch (e: Exception) {
-        UseCaseResult.Error(DataException.Unknown(e.message))
+        UseCaseResult.Error(e.mapError())
     }
 }.flowOn(coroutineDispatcher)
 

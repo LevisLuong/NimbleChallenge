@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -292,7 +293,9 @@ fun BottomView(
                 color = White,
                 fontWeight = FontWeight.ExtraBold,
             ),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("surveyTitle"),
             textAlign = TextAlign.Left
         )
         Row(
@@ -310,6 +313,7 @@ fun BottomView(
                 modifier = Modifier
                     .weight(1F)
                     .padding(end = 16.dp)
+                    .testTag("surveyDescription"),
             )
             IconButton(
                 onClick = {

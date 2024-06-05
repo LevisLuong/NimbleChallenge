@@ -23,13 +23,6 @@ class LoginViewModel @Inject constructor(
         ) {
             _navEvent.emit(LoginNavEvent.Home)
         }
-//        loginUseCase(LoginRequest(email, password))
-//            .bindLoading(this)
-//            .bindError(this)
-//            .onSuccess {
-//                _navEvent.emit(LoginNavEvent.Home)
-//            }
-//            .launchIn(viewModelScope)
     }
 
 }

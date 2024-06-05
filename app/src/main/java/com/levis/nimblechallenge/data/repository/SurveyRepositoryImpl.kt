@@ -23,8 +23,4 @@ class SurveyRepositoryImpl @Inject constructor(
             }
         }
 
-    override fun getSurveyDetails(id: String): Flow<Any> {
-        TODO("Not yet implemented")
-    }
-
 }

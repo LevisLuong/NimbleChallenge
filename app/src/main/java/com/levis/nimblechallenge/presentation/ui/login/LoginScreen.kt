@@ -246,8 +246,8 @@ fun LoginInputContent(
 
     val focusManager = LocalFocusManager.current
 
-    var email by rememberSaveable { mutableStateOf("luongxuantrung@gmail.com") }
-    var password by rememberSaveable { mutableStateOf("12345678") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
 
     AnimatedVisibility(
         visible,

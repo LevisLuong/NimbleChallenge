@@ -1,15 +1,41 @@
-# NimbleChallenge
-Nimble survey app challenge android developer
+# nimble-challenge
 
-Android Studio IDE setup
-For development, the latest version of Android Studio is required. The latest version can be downloaded from here.
+Challenge from Nimble for Android developer position
+Survey App
 
-uses ktlint to enforce Kotlin coding styles. Here's how to configure it for use with Android Studio (instructions adapted from the ktlint README):
+## Features
 
-Close Android Studio if it's open
+- **Splash**:  Show splash screen and checked if user login or not.
+- **Login**:  Users can login via Email & Password.
+- **Forgot Password**:  Users can request to reset password.
+- **Home**:  User can Browse a list of surveys ( **Offline support with pagination** ).
+- **Survey Details**: Temp survey detail with back button and receive Id from Home survey list.
 
-Download ktlint using these installation instructions
+## Getting started
 
-Apply ktlint settings to Android Studio using these instructions
+- Clone this repository.
+- Modify `local.properties` file in the project's `root` folder with these information:
 
-Start Android Studio
+~~~
+CLIENT_ID_DEV="[client_id_dev]"
+CLIENT_SECRET_DEV="[client_secret_dev]"
+
+CLIENT_ID="[client_id_prod]"
+CLIENT_SECRET="[client_secrete_prod]"
+~~~
+
+- Build and run.
+
+## Techs in App
+
+- **Language**: Kotlin
+- **Architecture**: MVVM with Clean Architecture
+- **UI**: Jetpack Compose with Material 3
+- **Paging**: Paging 3 with RemoteMediator
+- **Networking**: Retrofit
+- **Database**: Room
+- **Dependency Injection**: Hilt
+- **Image Loading**: Coil
+- **Preferences**: EncryptedSharedPreferences
+- **Code style conventions**: KtLint
+- **Testing**: JUnit, MockK and Turbine
